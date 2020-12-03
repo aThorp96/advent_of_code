@@ -12,44 +12,41 @@ use std::error::Error;
 use std::string::String;
 
 struct PasswordRule {
-    min: usize,
-    max: usize,
+    p1: usize,
+    p2: usize,
     letter: char,
 }
 
 impl PasswordRule {
     fn new(rule_str: &str) -> PasswordRule {
+        // Get delemeters
         let d1 = rule_str.find("-").unwrap();
         let d2 = rule_str.find(" ").unwrap();
 
         PasswordRule{
-            min: rule_str[..d1].parse::<usize>().unwrap(),
-            max: rule_str[d1+1..d2].parse::<usize>().unwrap(),
-            letter: rule_str[d2+1..(d2+2)].chars().next().unwrap(),
+            p1: rule_str[..d1].parse::<usize>().unwrap(),
+            p2: rule_str[d1+1..d2].parse::<usize>().unwrap(),
+            letter: rule_str.as_bytes()[d2+1] as char,
         }
     }
 
     fn matches(&self, pw: &str) -> bool {
-		let mut count = 0;
-		for c in pw.chars() {
-    		if c == self.letter {
-        		count = count + 1;
-    		}
-		}
-
-		count <= self.max && count >= self.min
+        let c1 = pw.as_bytes()[self.p1-1] as char;
+        let c2 = pw.as_bytes()[self.p2-1] as char;
+        println!("c1: {}\tc2: {}", c1, c2);
+		!(c1 == self.letter && c2 == self.letter) && (c1 == self.letter || c2 == self.letter)
     }
 }
 
 fn validate_data_line(data_line: String) -> bool {
 	let delemeter = data_line.find(":").unwrap();
 	let rule_str = &data_line[..delemeter];
-	let phrase_str = &data_line[delemeter..];
+	let phrase_str = &data_line[delemeter+2..];
 
 	// This could simply be returned, but I'd like to see the results to validate
 	let valid = PasswordRule::new(rule_str).matches(phrase_str);
 	if !valid {
-		println!("Invalid pw found: {}", data_line);
+    	println!("Invalid pw found: {}", data_line);
 	}
 	valid
 }
