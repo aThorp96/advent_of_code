@@ -91,12 +91,28 @@ fn day_3(input_file: &str, part: usize) {
             let slope = Slope::new(map, 1, 3);
             println!("Trees collided: {}", slope.num_collisions());
         }
+        2 => {
+            let mut total = 1;
+            let grades: Vec<(usize, usize)> = vec![(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)];
+
+            for (run, rise) in grades.iter() {
+                let slope = Slope::new(map.clone(), *rise, *run);
+                println!(
+                    "Right {}, down {}\nTrees collided: {}",
+                    run,
+                    rise,
+                    slope.num_collisions()
+                );
+                total *= slope.num_collisions();
+            }
+            println!("Total for collisions: {}", total);
+        }
         _ => return,
     };
 }
 
 fn main() {
-    day_3("input_full.txt", 1);
+    day_3("input_full.txt", 2);
 }
 
 #[cfg(test)]
